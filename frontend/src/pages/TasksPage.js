@@ -77,12 +77,19 @@ export default function TasksPage() {
 
   const toggle = async (id) => {
     try { await tasksAPI.toggle(id); loadTasks(); }
-    catch { toast("Error", "error"); }
+    catch { toast('Error', 'error'); }
+  };
+
+  const updatePriority = async (id, priority) => {
+    try {
+      await tasksAPI.update(id, { priority });
+      setTasks(prev => prev.map(t => t._id === id ? { ...t, priority } : t));
+    } catch { toast('Error updating priority', 'error'); }
   };
 
   const deleteTask = async (id) => {
-    try { await tasksAPI.delete(id); toast("Task deleted", "success"); loadTasks(); }
-    catch { toast("Error", "error"); }
+    try { await tasksAPI.delete(id); toast('Task deleted', 'success'); loadTasks(); }
+    catch { toast('Error', 'error'); }
   };
 
   const checklists = ["All", ...new Set(tasks.map(t => t.checklist_name).filter(Boolean))];
@@ -97,12 +104,14 @@ export default function TasksPage() {
 
   return (
     <Layout currentPage="Tasks">
-      <div className="section-header">
+      <div className="page-header">
         <div>
-          <div className="section-title">Tasks</div>
-          <div className="section-subtitle">{tasks.filter(t => !t.completed).length} pending · {tasks.filter(t => t.completed).length} completed</div>
+          <div className="page-title">Tasks</div>
+          <div className="page-subtitle">{tasks.filter(t => !t.completed).length} pending · {tasks.filter(t => t.completed).length} completed</div>
         </div>
-        <button className="btn btn-primary" onClick={() => { setEditTask(null); setShowModal(true); }}><Plus size={15} /> Add Task</button>
+        <div className="page-actions">
+          <button className="btn btn-primary" onClick={() => { setEditTask(null); setShowModal(true); }}><Plus size={15} /> Add Task</button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -110,11 +119,6 @@ export default function TasksPage() {
         <div className="tabs" style={{ width: "auto" }}>
           {["pending", "completed", "all"].map(s => (
             <button key={s} className={`tab-btn ${filterStatus === s ? "active" : ""}`} onClick={() => setFilterStatus(s)} style={{ textTransform: "capitalize" }}>{s === "all" ? "All" : s === "pending" ? "Pending" : "Completed"}</button>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginLeft: 'auto' }}>
-          {checklists.map(c => (
-            <span key={c} className={`tag ${filterChecklist === c ? "active" : ""}`} onClick={() => setFilterChecklist(c)}>{c}</span>
           ))}
         </div>
       </div>
@@ -127,16 +131,38 @@ export default function TasksPage() {
             <div key={group} className="mb-6">
               <div style={{ fontWeight: 700, fontSize: 13, color: "var(--text2)", textTransform: "uppercase", letterSpacing: ".5px", marginBottom: 8, paddingLeft: 2 }}>{group}</div>
               {items.map(t => (
-                <div key={t._id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10, background: "var(--surface)", border: "1px solid var(--border)", marginBottom: 6, opacity: t.completed ? .6 : 1, transition: "all .2s" }}>
-                  <button className="btn btn-ghost btn-icon-sm" onClick={() => toggle(t._id)} style={{ color: t.completed ? "var(--success)" : "var(--border)", padding: 0 }}>
-                    {t.completed ? <CheckCircle size={20} fill="var(--success)" /> : <Circle size={20} />}
+                <div key={t._id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: 'var(--surface)', border: '1px solid var(--border)', marginBottom: 6, opacity: t.completed ? .6 : 1, transition: 'all .2s' }}>
+                  <button className="btn btn-ghost btn-icon-sm" onClick={() => toggle(t._id)} style={{ color: t.completed ? 'var(--green)' : 'var(--border)', padding: 0 }}>
+                    {t.completed ? <CheckCircle size={20} fill="var(--green)" /> : <Circle size={20} />}
                   </button>
-                  <div className={`priority-dot priority-${t.priority}`} title={t.priority} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 500, fontSize: 13.5, textDecoration: t.completed ? "line-through" : "none", color: t.completed ? "var(--text3)" : "var(--text)" }}>{t.title}</div>
-                    {t.due_date && <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 1 }}>Due {format(new Date(t.due_date), "MMM d, yyyy")}</div>}
+                    <div style={{ fontWeight: 500, fontSize: 13.5, textDecoration: t.completed ? 'line-through' : 'none', color: t.completed ? 'var(--text3)' : 'var(--text)' }}>{t.title}</div>
+                    {t.due_date && <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 1 }}>Due {format(new Date(t.due_date), 'MMM d, yyyy')}</div>}
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2 items-center">
+                    {/* Priority dropdown - right side */}
+                    <select
+                      value={t.priority || 'Medium'}
+                      onChange={(e) => { e.stopPropagation(); updatePriority(t._id, e.target.value); }}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        height: 26,
+                        padding: '0 7px',
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        borderRadius: 6,
+                        border: '1px solid var(--border)',
+                        cursor: 'pointer',
+                        background: t.priority === 'High' ? 'var(--red-bg)' : t.priority === 'Low' ? 'var(--green-bg)' : 'var(--yellow-bg)',
+                        color: t.priority === 'High' ? 'var(--red)' : t.priority === 'Low' ? 'var(--green)' : 'var(--yellow)',
+                        outline: 'none',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <option value="High">🔴 High</option>
+                      <option value="Medium">🟡 Medium</option>
+                      <option value="Low">🟢 Low</option>
+                    </select>
                     <button className="btn btn-ghost btn-icon-sm" onClick={() => { setEditTask(t); setShowModal(true); }}><Edit2 size={12} /></button>
                     <button className="btn btn-ghost btn-icon-sm btn-danger" onClick={() => deleteTask(t._id)}><Trash2 size={12} /></button>
                   </div>

@@ -8,6 +8,7 @@ router.use(protect);
 router.get('/', habitController.getHabits);
 router.post('/', habitController.createHabit);
 router.put('/:id/toggle', habitController.toggleHabit);
+router.put('/:id', habitController.updateHabit);
 router.delete('/:id', habitController.deleteHabit);
 
 module.exports = router;

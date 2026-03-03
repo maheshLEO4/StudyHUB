@@ -39,6 +39,20 @@ exports.toggleHabit = async (req, res) => {
     }
 };
 
+exports.updateHabit = async (req, res) => {
+    try {
+        const habit = await Habit.findOneAndUpdate(
+            { _id: req.params.id, user: req.user.id },
+            req.body,
+            { new: true, runValidators: true }
+        );
+        if (!habit) return res.status(404).json({ success: false, message: 'Habit not found' });
+        res.json({ success: true, data: habit });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+};
+
 exports.deleteHabit = async (req, res) => {
     try {
         const habit = await Habit.findOneAndDelete({ _id: req.params.id, user: req.user.id });

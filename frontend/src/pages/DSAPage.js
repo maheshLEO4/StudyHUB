@@ -4,7 +4,7 @@ import Layout from "../components/layout/Layout";
 import { dsaAPI } from "../utils/api";
 import { useToast } from "../context/ToastContext";
 
-const STATUS_CYCLE = { "Not Started": "In Progress", "In Progress": "Completed", "Completed": "Not Started" };
+const STATUS_CYCLE = { 'Not Started': 'In Progress', 'In Progress': ' Completed', 'Completed': 'Not Started' };
 const DIFF_BADGE = { Easy: "badge-green", Medium: "badge-yellow", Hard: "badge-red" };
 const STATUS_BADGE = { "Not Started": "badge-gray", "In Progress": "badge-yellow", "Completed": "badge-green" };
 
@@ -19,8 +19,8 @@ function DSAModal({ problem, onClose, onSaved, toast }) {
     try {
       if (problem) await dsaAPI.update(problem._id, form);
       else await dsaAPI.create(form);
-      toast("Problem saved", "success"); onSaved();
-    } catch { toast("Error", "error"); }
+      toast('Problem saved', 'success'); onSaved();
+    } catch { toast('Error saving problem', 'error'); }
     finally { setSaving(false); }
   };
 
@@ -55,10 +55,6 @@ function DSAModal({ problem, onClose, onSaved, toast }) {
         <div className="form-group"><label className="form-label">Notes</label>
           <textarea className="form-control" placeholder="Approach, complexity, key insights..." value={form.notes} onChange={set("notes")} style={{ minHeight: 80 }} />
         </div>
-        <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? <span className="spinner spinner-sm" /> : "Save"}</button>
-        </div>
       </div>
     </div>
   );
@@ -85,7 +81,7 @@ export default function DSAPage() {
       const [p, s] = await Promise.all([dsaAPI.getAll(params), dsaAPI.getStats()]);
       setProblems(p.data.data || []);
       setStats(s.data.data || null);
-    } catch { toast("Failed to load", "error"); }
+    } catch { toast('Failed to load tracking data', 'error'); }
     finally { setLoading(false); }
   }, [filterStatus, filterDiff, search]);
 
@@ -110,32 +106,33 @@ export default function DSAPage() {
 
   return (
     <Layout currentPage="DSA Tracker">
-      <div className="section-header">
+      <div className="page-header">
         <div>
-          <div className="section-title">DSA Problem Tracker</div>
-          <div className="section-subtitle">{stats ? `${stats.completed}/${stats.total} solved` : "Track your coding practice"}</div>
+          <div className="page-title">DSA Problem Tracker</div>
+          <div className="page-subtitle">{stats ? `${stats.completed}/${stats.total} solved` : 'Track your coding practice'}</div>
         </div>
-        <button className="btn btn-primary" onClick={() => { setEditProblem(null); setShowModal(true); }}><Plus size={15} /> Add Problem</button>
+        <div className="page-actions">
+          <button className="btn btn-primary" onClick={() => { setEditProblem(null); setShowModal(true); }}><Plus size={15} /> Add Problem</button>
+        </div>
       </div>
-
       {/* Stats bar */}
       {stats && stats.total > 0 && (
-        <div className="card mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <span style={{ fontWeight: 700 }}>Progress</span>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '16px 20px', marginBottom: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '.5px' }}>Progress</span>
             <span className="badge badge-purple">{Math.round((stats.completed / stats.total) * 100)}%</span>
           </div>
-          <div className="progress-bar mb-3">
-            <div className="progress-fill" style={{ width: `${(stats.completed / stats.total) * 100}%`, background: "linear-gradient(90deg, var(--accent), var(--success))" }} />
+          <div style={{ height: 6, background: 'var(--border)', borderRadius: 6, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${(stats.completed / stats.total) * 100}%`, background: 'linear-gradient(90deg, #10b981, #34d399)', borderRadius: 6, transition: 'width .6s ease' }} />
           </div>
-          <div className="flex gap-4 flex-wrap" style={{ fontSize: 12 }}>
-            <span style={{ color: "var(--text3)" }}>⬜ Not Started: {stats.notStarted}</span>
-            <span style={{ color: "var(--warning)" }}>🟡 In Progress: {stats.inProgress}</span>
-            <span style={{ color: "var(--success)" }}>🟢 Completed: {stats.completed}</span>
-            <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
-              <span style={{ color: "var(--success)" }}>Easy: {stats.easy}</span>
-              <span style={{ color: "var(--warning)" }}>Medium: {stats.medium}</span>
-              <span style={{ color: "var(--danger)" }}>Hard: {stats.hard}</span>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 12.5, fontWeight: 500 }}>
+            <span style={{ color: 'var(--text3)' }}>⬜ Not Started: {stats.notStarted}</span>
+            <span style={{ color: 'var(--yellow)' }}>🟡 In Progress: {stats.inProgress}</span>
+            <span style={{ color: 'var(--green)' }}>🟢 Completed: {stats.completed}</span>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 12 }}>
+              <span style={{ color: 'var(--green)' }}>Easy: {stats.easy}</span>
+              <span style={{ color: 'var(--yellow)' }}>Medium: {stats.medium}</span>
+              <span style={{ color: 'var(--red)' }}>Hard: {stats.hard}</span>
             </div>
           </div>
         </div>
@@ -164,13 +161,6 @@ export default function DSAPage() {
       ) : (
         problems.map(p => (
           <div key={p._id} className="dsa-row">
-            <button
-              className={`status-cycle ${p.status === "Completed" ? "completed" : p.status === "In Progress" ? "in-progress" : ""}`}
-              onClick={() => cycleStatus(p)} title={`Click to change status (currently: ${p.status})`}
-            >
-              {p.status === "Completed" && <span style={{ color: "white", fontSize: 11 }}>✓</span>}
-              {p.status === "In Progress" && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "white", display: "block" }} />}
-            </button>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="flex items-center gap-2 flex-wrap mb-1">
                 <span style={{ fontWeight: 600, fontSize: 14 }}>{p.title}</span>
@@ -180,16 +170,24 @@ export default function DSAPage() {
                   </a>
                 )}
               </div>
-              {p.notes && <div style={{ fontSize: 12, color: "var(--text2)", marginBottom: 4 }} className="truncate">{p.notes}</div>}
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`badge ${DIFF_BADGE[p.difficulty]}`} style={{ fontSize: '10px' }}>{p.difficulty}</span>
-                <span className={`badge ${STATUS_BADGE[p.status]}`} style={{ fontSize: '10px' }}>{p.status}</span>
                 {p.topic && <span className="badge badge-gray" style={{ fontSize: '10px' }}>{p.topic}</span>}
               </div>
             </div>
             <div className="flex gap-2 items-center" style={{ flexShrink: 0 }}>
-              <button className="btn btn-ghost btn-icon-sm" onClick={() => { setEditProblem(p); setShowModal(true); }}><Edit2 size={13} /></button>
-              <button className="btn btn-ghost btn-icon-sm btn-danger" onClick={() => deleteProblem(p._id)}><Trash2 size={13} /></button>
+              <select
+                className="form-control"
+                style={{ width: 'auto', height: 28, padding: '0 8px', fontSize: 11.5, borderRadius: 6, cursor: 'pointer', background: 'var(--surface2)', borderColor: 'var(--border)' }}
+                value={p.status}
+                onChange={(e) => cycleStatus(p, e.target.value)}
+              >
+                <option>Not Started</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+              </select>
+              <button className="btn btn-ghost btn-icon-sm" onClick={() => { setEditProblem(p); setShowModal(true); }} style={{ height: 28, width: 28 }}><Edit2 size={13} /></button>
+              <button className="btn btn-ghost btn-icon-sm btn-danger" onClick={() => deleteProblem(p._id)} style={{ height: 28, width: 28 }}><Trash2 size={13} /></button>
             </div>
           </div>
         ))

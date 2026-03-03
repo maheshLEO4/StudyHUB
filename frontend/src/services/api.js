@@ -3,7 +3,6 @@
  * Centralises base URL, auth headers, token refresh, and error handling
  */
 import axios from 'axios';
-import toast from 'react-hot-toast';
 
 const BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
@@ -60,59 +59,59 @@ export default api;
 
 // ── Resource helpers ──────────────────────────────────────────────────────
 export const authAPI = {
-  signup:  (data)           => api.post('/auth/signup', data),
-  login:   (data)           => api.post('/auth/login', data),
-  logout:  ()               => api.post('/auth/logout'),
-  refresh: ()               => api.post('/auth/refresh'),
-  getMe:   ()               => api.get('/auth/me'),
-  updateMe:(data)           => api.patch('/auth/me', data),
-  changePassword: (data)    => api.patch('/auth/change-password', data),
+  signup: (data) => api.post('/auth/signup', data),
+  login: (data) => api.post('/auth/login', data),
+  logout: () => api.post('/auth/logout'),
+  refresh: () => api.post('/auth/refresh'),
+  getMe: () => api.get('/auth/me'),
+  updateMe: (data) => api.patch('/auth/me', data),
+  changePassword: (data) => api.patch('/auth/change-password', data),
 };
 
 export const subjectsAPI = {
-  getAll:      ()           => api.get('/subjects'),
-  getOne:      (id)         => api.get(`/subjects/${id}`),
-  create:      (data)       => api.post('/subjects', data),
-  update:      (id, data)   => api.patch(`/subjects/${id}`, data),
-  delete:      (id)         => api.delete(`/subjects/${id}`),
-  addNote:     (id, data)   => api.post(`/subjects/${id}/notes`, data),
-  updateNote:  (id, nId, d) => api.patch(`/subjects/${id}/notes/${nId}`, d),
-  deleteNote:  (id, nId)    => api.delete(`/subjects/${id}/notes/${nId}`),
+  getAll: () => api.get('/subjects'),
+  getOne: (id) => api.get(`/subjects/${id}`),
+  create: (data) => api.post('/subjects', data),
+  update: (id, data) => api.patch(`/subjects/${id}`, data),
+  delete: (id) => api.delete(`/subjects/${id}`),
+  addNote: (id, data) => api.post(`/subjects/${id}/notes`, data),
+  updateNote: (id, nId, d) => api.patch(`/subjects/${id}/notes/${nId}`, d),
+  deleteNote: (id, nId) => api.delete(`/subjects/${id}/notes/${nId}`),
 };
 
 export const linksAPI = {
-  getAll:  (params)       => api.get('/links', { params }),
-  create:  (data)         => api.post('/links', data),
-  update:  (id, data)     => api.patch(`/links/${id}`, data),
-  delete:  (id)           => api.delete(`/links/${id}`),
+  getAll: (params) => api.get('/links', { params }),
+  create: (data) => api.post('/links', data),
+  update: (id, data) => api.patch(`/links/${id}`, data),
+  delete: (id) => api.delete(`/links/${id}`),
 };
 
 export const dsaAPI = {
-  getAll:  (params)       => api.get('/dsa', { params }),
-  create:  (data)         => api.post('/dsa', data),
-  update:  (id, data)     => api.patch(`/dsa/${id}`, data),
-  delete:  (id)           => api.delete(`/dsa/${id}`),
+  getAll: (params) => api.get('/dsa', { params }),
+  create: (data) => api.post('/dsa', data),
+  update: (id, data) => api.patch(`/dsa/${id}`, data),
+  delete: (id) => api.delete(`/dsa/${id}`),
 };
 
 export const eventsAPI = {
-  getAll:  (params)       => api.get('/events', { params }),
-  create:  (data)         => api.post('/events', data),
-  update:  (id, data)     => api.patch(`/events/${id}`, data),
-  delete:  (id)           => api.delete(`/events/${id}`),
+  getAll: (params) => api.get('/events', { params }),
+  create: (data) => api.post('/events', data),
+  update: (id, data) => api.patch(`/events/${id}`, data),
+  delete: (id) => api.delete(`/events/${id}`),
 };
 
 export const todosAPI = {
-  getChecklists:    ()          => api.get('/todos/checklists'),
-  createChecklist:  (data)      => api.post('/todos/checklists', data),
-  updateChecklist:  (id, data)  => api.patch(`/todos/checklists/${id}`, data),
-  deleteChecklist:  (id)        => api.delete(`/todos/checklists/${id}`),
-  getAll:   (params)            => api.get('/todos', { params }),
-  create:   (data)              => api.post('/todos', data),
-  update:   (id, data)          => api.patch(`/todos/${id}`, data),
-  delete:   (id)                => api.delete(`/todos/${id}`),
+  getChecklists: () => api.get('/todos/checklists'),
+  createChecklist: (data) => api.post('/todos/checklists', data),
+  updateChecklist: (id, data) => api.patch(`/todos/checklists/${id}`, data),
+  deleteChecklist: (id) => api.delete(`/todos/checklists/${id}`),
+  getAll: (params) => api.get('/todos', { params }),
+  create: (data) => api.post('/todos', data),
+  update: (id, data) => api.patch(`/todos/${id}`, data),
+  delete: (id) => api.delete(`/todos/${id}`),
 };
 
 export const searchAPI = {
-  search:    (q)   => api.get('/search', { params: { q } }),
-  dashboard: ()    => api.get('/search/dashboard'),
+  search: (q) => api.get('/search', { params: { q } }),
+  dashboard: () => api.get('/search/dashboard'),
 };

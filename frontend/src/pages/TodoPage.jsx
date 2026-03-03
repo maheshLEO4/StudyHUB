@@ -155,18 +155,21 @@ const TodoPage = () => {
 
   return (
     <div className="page-container fade-in">
-      <div className="page-header">
+      <div className="page-header mt-8 mb-6">
         <div>
-          <h1>To-Do Lists</h1>
-          <p>Create and manage your study checklists</p>
+          <div className="page-title">To-Do Lists</div>
+          <div className="page-subtitle">Create and manage your study checklists</div>
         </div>
-        <button className="btn btn-primary" onClick={() => { setEditList(null); setShowModal(true); }}>
-          <Plus size={18} /> New List
-        </button>
+        <div className="page-actions">
+          <button className="btn btn-primary" onClick={() => { setEditList(null); setShowModal(true); }}>
+            <Plus size={18} /> New List
+          </button>
+        </div>
       </div>
 
+
       {loading ? (
-        <div className="grid-2">{[1,2].map(i => <div key={i} className="skeleton" style={{ height: 200 }} />)}</div>
+        <div className="grid-2">{[1, 2].map(i => <div key={i} className="skeleton" style={{ height: 200 }} />)}</div>
       ) : lists.length === 0 ? (
         <div className="card"><div className="empty-state"><CheckSquare size={36} style={{ opacity: 0.3 }} /><h3>No checklists yet</h3><p>Create your first checklist to track tasks.</p><button className="btn btn-primary" onClick={() => setShowModal(true)}><Plus size={16} /> Create List</button></div></div>
       ) : (

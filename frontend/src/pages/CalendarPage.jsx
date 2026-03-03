@@ -137,12 +137,14 @@ const CalendarPage = () => {
     <div className="page-container fade-in">
       <div className="page-header">
         <div>
-          <h1>Calendar</h1>
-          <p>Manage your study schedule, assignments, and exams</p>
+          <div className="page-title">Calendar</div>
+          <div className="page-subtitle">Manage your study schedule, assignments, and exams</div>
         </div>
-        <button className="btn btn-primary" onClick={() => { setEditEvent(null); setShowModal(true); }}>
-          <Plus size={18} /> Add Event
-        </button>
+        <div className="page-actions">
+          <button className="btn btn-primary" onClick={() => { setEditEvent(null); setShowModal(true); }}>
+            <Plus size={15} /> Add Event
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 'var(--space-6)' }}>

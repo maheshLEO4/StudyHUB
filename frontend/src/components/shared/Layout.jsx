@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import Icon from './Icon';
 
 const NAV_ITEMS = [
@@ -10,13 +10,13 @@ const NAV_ITEMS = [
   { to: '/links', icon: 'link', label: 'Links' },
   { to: '/dsa', icon: 'code', label: 'DSA Tracker' },
   { to: '/calendar', icon: 'calendar', label: 'Calendar' },
-  { to: '/habits', icon: 'fire', label: 'Daily Habits' },
+  { to: '/habits', icon: 'fire', label: 'Daily Tasks' },
   { to: '/todos', icon: 'checklist', label: 'Tasks' },
 ];
 
 const Layout = ({ children }) => {
   const { user, logout } = useAuth();
-  const { theme, toggle } = useTheme();
+  const { dark, toggle } = useTheme();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -74,7 +74,7 @@ const Layout = ({ children }) => {
             <Icon name="search" size={17} />
           </button>
           <button className="topbar__icon-btn" onClick={toggle} title="Toggle theme">
-            <Icon name={theme === 'light' ? 'moon' : 'sun'} size={17} />
+            <Icon name={!dark ? 'moon' : 'sun'} size={17} />
           </button>
           <button className="topbar__icon-btn" onClick={() => navigate('/settings')} title="Settings">
             <Icon name="settings" size={17} />

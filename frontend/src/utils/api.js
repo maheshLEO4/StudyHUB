@@ -105,6 +105,7 @@ export const habitsAPI = {
   getAll: () => api.get('/habits'),
   create: (data) => api.post('/habits', data),
   toggle: (id) => api.put(`/habits/${id}/toggle`),
+  update: (id, d) => api.put(`/habits/${id}`, d),
   delete: (id) => api.delete(`/habits/${id}`),
 };
 

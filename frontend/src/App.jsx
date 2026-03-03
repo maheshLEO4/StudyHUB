@@ -13,6 +13,7 @@ import CalendarPage from './components/calendar/CalendarPage';
 import TodosPage from './components/todos/TodosPage';
 import SearchPage from './components/search/SearchPage';
 import SettingsPage from './components/settings/SettingsPage';
+import HabitsPage from './pages/HabitsPage';
 import Spinner from './components/shared/Spinner';
 import './styles/components.css';
 
@@ -20,7 +21,7 @@ import './styles/components.css';
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return (
-    <div style={{display:'grid',placeItems:'center',height:'100vh'}}>
+    <div style={{ display: 'grid', placeItems: 'center', height: '100vh' }}>
       <Spinner size={36} />
     </div>
   );
@@ -30,15 +31,16 @@ const PrivateRoute = ({ children }) => {
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<AuthPage />} />
-    <Route path="/"         element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+    <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
     <Route path="/subjects" element={<PrivateRoute><SubjectsPage /></PrivateRoute>} />
-    <Route path="/links"    element={<PrivateRoute><LinksPage /></PrivateRoute>} />
-    <Route path="/dsa"      element={<PrivateRoute><DSAPage /></PrivateRoute>} />
+    <Route path="/links" element={<PrivateRoute><LinksPage /></PrivateRoute>} />
+    <Route path="/dsa" element={<PrivateRoute><DSAPage /></PrivateRoute>} />
     <Route path="/calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
-    <Route path="/todos"    element={<PrivateRoute><TodosPage /></PrivateRoute>} />
-    <Route path="/search"   element={<PrivateRoute><SearchPage /></PrivateRoute>} />
+    <Route path="/todos" element={<PrivateRoute><TodosPage /></PrivateRoute>} />
+    <Route path="/search" element={<PrivateRoute><SearchPage /></PrivateRoute>} />
+    <Route path="/habits" element={<PrivateRoute><HabitsPage /></PrivateRoute>} />
     <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
-    <Route path="*"         element={<Navigate to="/" replace />} />
+    <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );
 

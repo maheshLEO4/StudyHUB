@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { to: '/links', label: 'Links', Icon: Link2 },
   { to: '/dsa', label: 'DSA Tracker', Icon: Code2 },
   { to: '/calendar', label: 'Calendar', Icon: Calendar },
-  { to: '/habits', label: 'Daily Habits', Icon: Flame },
+  { to: '/habits', label: 'Daily Tasks', Icon: Flame },
   { to: '/tasks', label: 'Tasks', Icon: CheckSquare },
 ];
 

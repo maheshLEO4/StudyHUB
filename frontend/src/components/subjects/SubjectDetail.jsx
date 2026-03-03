@@ -7,14 +7,14 @@ import EmptyState from '../shared/EmptyState';
 import Badge from '../shared/Badge';
 
 const SubjectDetail = ({ subject, onBack, onUpdate }) => {
-  const [tab, setTab]           = useState('notes');
+  const [tab, setTab] = useState('notes');
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [editNote, setEditNote] = useState(null);
   const [noteForm, setNoteForm] = useState({ title: '', content: '', important: false });
   const { execute, loading: saving } = useApi();
 
   const notes = subject.notes || [];
-  const regular   = notes.filter((n) => !n.important);
+  const regular = notes.filter((n) => !n.important);
   const important = notes.filter((n) => n.important);
   const displayed = tab === 'important' ? important : regular;
 
@@ -63,18 +63,28 @@ const SubjectDetail = ({ subject, onBack, onUpdate }) => {
 
       {displayed.length === 0 && <EmptyState emoji={tab === 'important' ? '⭐' : '📝'} title={tab === 'important' ? 'No important notes' : 'No notes yet'} description={tab === 'important' ? 'Mark notes as important to see them here' : 'Add your first note for this subject'} action={<button className="btn btn-primary btn-sm" onClick={openAddNote}><Icon name="plus" size={13} />Add Note</button>} />}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {displayed.map((n) => (
-          <div key={n._id} className={`note-card ${n.important ? 'note-card--important' : ''}`}>
-            <div className="flex items-center justify-between mb-2">
-              <div className="note-title">{n.important && '⭐ '}{n.title}</div>
-              <div className="flex gap-1">
-                <button className="btn btn-ghost btn-sm btn-icon" onClick={() => openEditNote(n)}><Icon name="edit" size={13} /></button>
-                <button className="btn btn-ghost btn-sm btn-icon" onClick={() => deleteNote(n._id)}><Icon name="trash" size={13} /></button>
+          <div key={n._id} className={`note-card ${n.important ? 'note-card--important' : ''}`} style={{ padding: '8px 12px', borderRadius: 10 }}>
+            <div className="flex items-center justify-between">
+              <div
+                style={{ cursor: 'pointer', flex: 1, minWidth: 0, paddingRight: 10 }}
+                onClick={() => openEditNote(n)}
+                title="Click to edit note"
+              >
+                <div className="note-title" style={{ fontSize: 13, marginBottom: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {n.important && <Icon name="star" size={11} style={{ color: 'var(--yellow)', fill: 'var(--yellow)' }} />}
+                  <span className="truncate" style={{ fontWeight: 700 }}>{n.title}</span>
+                </div>
+                <div className="note-preview" style={{ fontSize: 12, opacity: 0.7, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {n.content || <em style={{ opacity: 0.5 }}>No content</em>}
+                </div>
+              </div>
+              <div className="flex gap-1" style={{ flexShrink: 0 }}>
+                <button className="btn btn-ghost btn-sm btn-icon" onClick={() => openEditNote(n)} style={{ width: 26, height: 26, border: 'none' }} title="Edit"><Icon name="edit" size={12} /></button>
+                <button className="btn btn-ghost btn-sm btn-icon btn-danger" onClick={() => deleteNote(n._id)} style={{ width: 26, height: 26, border: 'none' }} title="Delete"><Icon name="trash" size={12} /></button>
               </div>
             </div>
-            <div className="note-preview">{n.content}</div>
-            {n.tags?.length > 0 && <div className="tags mt-3">{n.tags.map((t) => <span key={t} className="badge badge-gray">#{t}</span>)}</div>}
           </div>
         ))}
       </div>
