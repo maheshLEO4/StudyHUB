@@ -16,39 +16,18 @@ const api = axios.create({
 // Attach access token from localStorage
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token && token !== 'undefined') config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Handle 401 → attempt refresh; on failure → redirect to login
-let refreshing = false;
-let queue = [];
-
+// Handle 401 → redirect to login
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const original = error.config;
-    if (error.response?.status === 401 && !original._retry) {
-      if (refreshing) {
-        return new Promise((resolve, reject) => {
-          queue.push({ resolve, reject });
-        }).then(() => api(original));
-      }
-      original._retry = true;
-      refreshing = true;
-      try {
-        const { data } = await axios.post(`${BASE_URL}/auth/refresh`, {}, { withCredentials: true });
-        localStorage.setItem('accessToken', data.data.accessToken);
-        queue.forEach(({ resolve }) => resolve());
-        queue = [];
-        return api(original);
-      } catch {
-        queue.forEach(({ reject }) => reject(error));
-        queue = [];
-        localStorage.removeItem('accessToken');
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('accessToken');
+      if (window.location.pathname !== '/login') {
         window.location.href = '/login';
-      } finally {
-        refreshing = false;
       }
     }
     return Promise.reject(error);
@@ -62,7 +41,6 @@ export const authAPI = {
   signup: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
   logout: () => api.post('/auth/logout'),
-  refresh: () => api.post('/auth/refresh'),
   getMe: () => api.get('/auth/me'),
   updateMe: (data) => api.put('/auth/profile', data),
   changePassword: (data) => api.put('/auth/password', data),
