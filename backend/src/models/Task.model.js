@@ -4,25 +4,25 @@
 const mongoose = require('mongoose');
 
 const TaskSchema = new mongoose.Schema({
-  user:           { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  title:          { type: String, required: [true, 'Task title required'], trim: true, maxlength: 300 },
-  checklist_name: { type: String, trim: true, default: 'General' },
-  priority:       { type: String, enum: ['Low', 'Medium', 'High'], default: 'Medium' },
-  due_date:       { type: Date },
-  completed:      { type: Boolean, default: false },
-  completed_at:   { type: Date }
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  text: { type: String, required: [true, 'Task text required'], trim: true, maxlength: 300 },
+  checklist: { type: String, trim: true }, // Store name or ID
+  priority: { type: String, enum: ['low', 'medium', 'high', 'Low', 'Medium', 'High'], default: 'medium' },
+  dueDate: { type: String }, // Storing as string to match frontend 'YYYY-MM-DD'
+  done: { type: Boolean, default: false },
+  completed_at: { type: Date }
 }, { timestamps: true });
 
 TaskSchema.pre('save', function (next) {
-  if (this.isModified('completed') && this.completed) {
+  if (this.isModified('done') && this.done) {
     this.completed_at = new Date();
-  } else if (this.isModified('completed') && !this.completed) {
+  } else if (this.isModified('done') && !this.done) {
     this.completed_at = undefined;
   }
   next();
 });
 
-TaskSchema.index({ user: 1, completed: 1 });
-TaskSchema.index({ user: 1, due_date: 1 });
+TaskSchema.index({ user: 1, done: 1 });
+TaskSchema.index({ user: 1, dueDate: 1 });
 
 module.exports = mongoose.model('Task', TaskSchema);

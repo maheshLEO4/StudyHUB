@@ -59,13 +59,13 @@ export default api;
 
 // ── Resource helpers ──────────────────────────────────────────────────────
 export const authAPI = {
-  signup: (data) => api.post('/auth/signup', data),
+  signup: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
   logout: () => api.post('/auth/logout'),
   refresh: () => api.post('/auth/refresh'),
   getMe: () => api.get('/auth/me'),
-  updateMe: (data) => api.put('/auth/me', data),
-  changePassword: (data) => api.put('/auth/change-password', data),
+  updateMe: (data) => api.put('/auth/profile', data),
+  changePassword: (data) => api.put('/auth/password', data),
 };
 
 export const subjectsAPI = {
@@ -74,9 +74,9 @@ export const subjectsAPI = {
   create: (data) => api.post('/subjects', data),
   update: (id, data) => api.put(`/subjects/${id}`, data),
   delete: (id) => api.delete(`/subjects/${id}`),
-  addNote: (id, data) => api.post(`/subjects/${id}/notes`, data),
-  updateNote: (id, nId, d) => api.put(`/subjects/${id}/notes/${nId}`, d),
-  deleteNote: (id, nId) => api.delete(`/subjects/${id}/notes/${nId}`),
+  addNote: (sId, data) => api.post('/notes', { ...data, subject: sId }),
+  updateNote: (sId, nId, d) => api.put(`/notes/${nId}`, d),
+  deleteNote: (sId, nId) => api.delete(`/notes/${nId}`),
 };
 
 export const linksAPI = {
@@ -94,21 +94,21 @@ export const dsaAPI = {
 };
 
 export const eventsAPI = {
-  getAll: (params) => api.get('/events', { params }),
-  create: (data) => api.post('/events', data),
-  update: (id, data) => api.put(`/events/${id}`, data),
-  delete: (id) => api.delete(`/events/${id}`),
+  getAll: (params) => api.get('/calendar', { params }),
+  create: (data) => api.post('/calendar', data),
+  update: (id, data) => api.put(`/calendar/${id}`, data),
+  delete: (id) => api.delete(`/calendar/${id}`),
 };
 
 export const todosAPI = {
-  getChecklists: () => api.get('/todos/checklists'),
-  createChecklist: (data) => api.post('/todos/checklists', data),
-  updateChecklist: (id, data) => api.put(`/todos/checklists/${id}`, data),
-  deleteChecklist: (id) => api.delete(`/todos/checklists/${id}`),
-  getAll: (params) => api.get('/todos', { params }),
-  create: (data) => api.post('/todos', data),
-  update: (id, data) => api.put(`/todos/${id}`, data),
-  delete: (id) => api.delete(`/todos/${id}`),
+  getChecklists: () => api.get('/tasks/checklists'),
+  createChecklist: (data) => api.post('/tasks/checklists', data),
+  updateChecklist: (id, data) => api.put(`/tasks/checklists/${id}`, data),
+  deleteChecklist: (id) => api.delete(`/tasks/checklists/${id}`),
+  getAll: (params) => api.get('/tasks', { params }),
+  create: (data) => api.post('/tasks', data),
+  update: (id, data) => api.put(`/tasks/${id}`, data),
+  delete: (id) => api.delete(`/tasks/${id}`),
 };
 
 export const searchAPI = {

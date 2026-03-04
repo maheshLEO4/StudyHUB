@@ -1,9 +1,9 @@
 // ============================================================
 // Note Controller
 // ============================================================
-const Note    = require('../models/Note.model');
+const Note = require('../models/Note.model');
 const Subject = require('../models/Subject.model');
-const path    = require('path');
+const path = require('path');
 const { successResponse, errorResponse } = require('../utils/response.utils');
 
 // GET /api/notes?subject=id&important=true
@@ -11,7 +11,7 @@ const getNotes = async (req, res) => {
   try {
     const query = { user: req.user._id };
     if (req.query.subject) query.subject = req.query.subject;
-    if (req.query.important === 'true') query.is_important = true;
+    if (req.query.important === 'true') query.important = true;
     const notes = await Note.find(query).sort({ createdAt: -1 });
     return successResponse(res, notes);
   } catch (err) { return errorResponse(res, err.message); }
@@ -29,12 +29,12 @@ const getNote = async (req, res) => {
 // POST /api/notes
 const createNote = async (req, res) => {
   try {
-    const { title, content, subject, is_important, tags, file_urls } = req.body;
+    const { title, content, subject, important, tags, file_urls } = req.body;
     if (!title) return errorResponse(res, 'Title required', 400);
     if (!subject) return errorResponse(res, 'Subject required', 400);
     const subjectDoc = await Subject.findOne({ _id: subject, user: req.user._id });
     if (!subjectDoc) return errorResponse(res, 'Subject not found', 404);
-    const note = await Note.create({ user: req.user._id, subject, title, content, is_important, tags, file_urls });
+    const note = await Note.create({ user: req.user._id, subject, title, content, important, tags, file_urls });
     return successResponse(res, note, 'Note created', 201);
   } catch (err) { return errorResponse(res, err.message); }
 };
