@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchAPI } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import Icon from '../shared/Icon';
 import Spinner from '../shared/Spinner';
 

@@ -13,7 +13,7 @@ import CalendarPage from './components/calendar/CalendarPage';
 import TodosPage from './components/todos/TodosPage';
 import SearchPage from './components/search/SearchPage';
 import SettingsPage from './components/settings/SettingsPage';
-import HabitsPage from './pages/HabitsPage';
+import HabitsPage from './components/habits/HabitsPage';
 import Spinner from './components/shared/Spinner';
 import './styles/components.css';
 
