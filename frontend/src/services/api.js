@@ -64,50 +64,50 @@ export const authAPI = {
   logout: () => api.post('/auth/logout'),
   refresh: () => api.post('/auth/refresh'),
   getMe: () => api.get('/auth/me'),
-  updateMe: (data) => api.patch('/auth/me', data),
-  changePassword: (data) => api.patch('/auth/change-password', data),
+  updateMe: (data) => api.put('/auth/me', data),
+  changePassword: (data) => api.put('/auth/change-password', data),
 };
 
 export const subjectsAPI = {
   getAll: () => api.get('/subjects'),
   getOne: (id) => api.get(`/subjects/${id}`),
   create: (data) => api.post('/subjects', data),
-  update: (id, data) => api.patch(`/subjects/${id}`, data),
+  update: (id, data) => api.put(`/subjects/${id}`, data),
   delete: (id) => api.delete(`/subjects/${id}`),
   addNote: (id, data) => api.post(`/subjects/${id}/notes`, data),
-  updateNote: (id, nId, d) => api.patch(`/subjects/${id}/notes/${nId}`, d),
+  updateNote: (id, nId, d) => api.put(`/subjects/${id}/notes/${nId}`, d),
   deleteNote: (id, nId) => api.delete(`/subjects/${id}/notes/${nId}`),
 };
 
 export const linksAPI = {
   getAll: (params) => api.get('/links', { params }),
   create: (data) => api.post('/links', data),
-  update: (id, data) => api.patch(`/links/${id}`, data),
+  update: (id, data) => api.put(`/links/${id}`, data),
   delete: (id) => api.delete(`/links/${id}`),
 };
 
 export const dsaAPI = {
   getAll: (params) => api.get('/dsa', { params }),
   create: (data) => api.post('/dsa', data),
-  update: (id, data) => api.patch(`/dsa/${id}`, data),
+  update: (id, data) => api.put(`/dsa/${id}`, data),
   delete: (id) => api.delete(`/dsa/${id}`),
 };
 
 export const eventsAPI = {
   getAll: (params) => api.get('/events', { params }),
   create: (data) => api.post('/events', data),
-  update: (id, data) => api.patch(`/events/${id}`, data),
+  update: (id, data) => api.put(`/events/${id}`, data),
   delete: (id) => api.delete(`/events/${id}`),
 };
 
 export const todosAPI = {
   getChecklists: () => api.get('/todos/checklists'),
   createChecklist: (data) => api.post('/todos/checklists', data),
-  updateChecklist: (id, data) => api.patch(`/todos/checklists/${id}`, data),
+  updateChecklist: (id, data) => api.put(`/todos/checklists/${id}`, data),
   deleteChecklist: (id) => api.delete(`/todos/checklists/${id}`),
   getAll: (params) => api.get('/todos', { params }),
   create: (data) => api.post('/todos', data),
-  update: (id, data) => api.patch(`/todos/${id}`, data),
+  update: (id, data) => api.put(`/todos/${id}`, data),
   delete: (id) => api.delete(`/todos/${id}`),
 };
 
@@ -120,6 +120,6 @@ export const habitsAPI = {
   getAll: () => api.get('/habits'),
   create: (data) => api.post('/habits', data),
   toggle: (id) => api.put(`/habits/${id}/toggle`),
-  update: (id, data) => api.patch(`/habits/${id}`, data),
+  update: (id, data) => api.put(`/habits/${id}`, data),
   delete: (id) => api.delete(`/habits/${id}`),
 };
