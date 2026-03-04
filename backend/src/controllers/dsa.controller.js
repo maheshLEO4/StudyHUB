@@ -58,22 +58,36 @@ const getStats = async (req, res) => {
 
 const createProblem = async (req, res) => {
   try {
-    const { title, url, difficulty, topic, status, notes } = req.body;
+    let { title, url, difficulty, topic, status, notes } = req.body;
     if (!title) return errorResponse(res, 'Problem title required', 400);
+    // Normalize enums for lowercase backend storage
+    if (status) status = status.toLowerCase();
+    if (difficulty) difficulty = difficulty.toLowerCase();
+
     const problem = await DSAProblem.create({ user: req.user._id, title, url, difficulty, topic, status, notes });
     return successResponse(res, problem, 'Problem added', 201);
-  } catch (err) { return errorResponse(res, err.message); }
+  } catch (err) {
+    console.error('createProblem Error:', err);
+    return errorResponse(res, err.message);
+  }
 };
 
 const updateProblem = async (req, res) => {
   try {
+    const updates = { ...req.body };
+    if (updates.status) updates.status = updates.status.toLowerCase();
+    if (updates.difficulty) updates.difficulty = updates.difficulty.toLowerCase();
+
     const problem = await DSAProblem.findOneAndUpdate(
       { _id: req.params.id, user: req.user._id },
-      req.body, { new: true }
+      updates, { new: true }
     );
     if (!problem) return errorResponse(res, 'Problem not found', 404);
     return successResponse(res, problem, 'Problem updated');
-  } catch (err) { return errorResponse(res, err.message); }
+  } catch (err) {
+    console.error('updateProblem Error:', err);
+    return errorResponse(res, err.message);
+  }
 };
 
 const deleteProblem = async (req, res) => {
