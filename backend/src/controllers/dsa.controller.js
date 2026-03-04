@@ -6,17 +6,37 @@ const { successResponse, errorResponse } = require('../utils/response.utils');
 
 const getProblems = async (req, res) => {
   try {
-    const query = { user: req.user._id };
-    if (req.query.status && req.query.status !== 'All') query.status = req.query.status;
-    if (req.query.difficulty && req.query.difficulty !== 'All') query.difficulty = req.query.difficulty;
+    const userId = req.user._id;
+    const query = { user: userId };
+    if (req.query.status && req.query.status !== 'All') query.status = req.query.status.toLowerCase();
+    if (req.query.difficulty && req.query.difficulty !== 'All') query.difficulty = req.query.difficulty.toLowerCase();
     if (req.query.search) {
       query.$or = [
         { title: { $regex: req.query.search, $options: 'i' } },
         { topic: { $regex: req.query.search, $options: 'i' } }
       ];
     }
-    const problems = await DSAProblem.find(query).sort({ createdAt: -1 });
-    return successResponse(res, problems);
+    const [problems, stats] = await Promise.all([
+      DSAProblem.find(query).sort({ createdAt: -1 }),
+      DSAProblem.aggregate([
+        { $match: { user: userId } },
+        { $group: { _id: '$status', count: { $sum: 1 } } }
+      ])
+    ]);
+
+    const statsObj = { 'not-started': 0, 'in-progress': 0, completed: 0, total: 0 };
+    stats.forEach(s => {
+      if (s._id) {
+        statsObj[s._id] = s.count;
+        statsObj.total += s.count;
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: problems,
+      meta: { stats: statsObj }
+    });
   } catch (err) { return errorResponse(res, err.message); }
 };
 
@@ -25,12 +45,12 @@ const getStats = async (req, res) => {
     const userId = req.user._id;
     const [total, easy, medium, hard, notStarted, inProgress, completed] = await Promise.all([
       DSAProblem.countDocuments({ user: userId }),
-      DSAProblem.countDocuments({ user: userId, difficulty: 'Easy' }),
-      DSAProblem.countDocuments({ user: userId, difficulty: 'Medium' }),
-      DSAProblem.countDocuments({ user: userId, difficulty: 'Hard' }),
-      DSAProblem.countDocuments({ user: userId, status: 'Not Started' }),
-      DSAProblem.countDocuments({ user: userId, status: 'In Progress' }),
-      DSAProblem.countDocuments({ user: userId, status: 'Completed' })
+      DSAProblem.countDocuments({ user: userId, difficulty: 'easy' }),
+      DSAProblem.countDocuments({ user: userId, difficulty: 'medium' }),
+      DSAProblem.countDocuments({ user: userId, difficulty: 'hard' }),
+      DSAProblem.countDocuments({ user: userId, status: 'not-started' }),
+      DSAProblem.countDocuments({ user: userId, status: 'in-progress' }),
+      DSAProblem.countDocuments({ user: userId, status: 'completed' })
     ]);
     return successResponse(res, { total, easy, medium, hard, notStarted, inProgress, completed });
   } catch (err) { return errorResponse(res, err.message); }
