@@ -115,3 +115,11 @@ export const searchAPI = {
   search: (q) => api.get('/search', { params: { q } }),
   dashboard: () => api.get('/search/dashboard'),
 };
+
+export const habitsAPI = {
+  getAll: () => api.get('/habits'),
+  create: (data) => api.post('/habits', data),
+  toggle: (id) => api.put(`/habits/${id}/toggle`),
+  update: (id, data) => api.patch(`/habits/${id}`, data),
+  delete: (id) => api.delete(`/habits/${id}`),
+};
