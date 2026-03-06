@@ -21,9 +21,6 @@ const habitRoutes = require('./routes/habit.routes');
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
-
 // ── Middleware ──────────────────────────────────────────────
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:3000',
@@ -53,8 +50,6 @@ app.get('/', (req, res) => res.send('StudyHub API is Running... 🚀'));
 
 const errorHandler = require('./middleware/errorHandler');
 
-// ... (existing routes)
-
 // ── 404 & Error Handler ─────────────────────────────────────
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 
@@ -63,7 +58,32 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, '0.0.0.0', () => {
+// Start the HTTP server FIRST so Render detects the open port immediately,
+// then connect to MongoDB asynchronously.
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 StudyHub API running on port ${PORT}`);
   console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
+
+// Connect to MongoDB after server is already listening
+connectDB();
+
+// ── Graceful Shutdown ───────────────────────────────────────
+// Render (and other PaaS platforms) send SIGTERM when deploying a new version.
+// We handle it gracefully so in-flight requests complete before the process exits.
+const shutdown = (signal) => {
+  console.log(`\n⚡ Received ${signal}. Shutting down gracefully...`);
+  server.close(() => {
+    console.log('✅ HTTP server closed. Exiting process.');
+    process.exit(0);
+  });
+
+  // Force-kill after 10 seconds if requests are still hanging
+  setTimeout(() => {
+    console.error('⏱️ Graceful shutdown timed out. Force-exiting.');
+    process.exit(1);
+  }, 10_000);
+};
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
