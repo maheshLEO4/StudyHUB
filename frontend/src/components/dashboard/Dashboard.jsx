@@ -112,7 +112,7 @@ const Dashboard = () => {
       </div>
 
       {/* Main Grid - Flexible height */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, flex: 1, minHeight: 0 }}>
+      <div className="dashboard-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, flex: 1, minHeight: 0 }}>
         {/* Left Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
           {/* Upcoming - Clickable Header */}
