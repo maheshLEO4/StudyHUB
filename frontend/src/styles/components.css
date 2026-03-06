@@ -202,7 +202,7 @@
 }
 
 .topbar__menu-btn--mobile {
-  display: none;
+  display: none !important;
 }
 
 @media (max-width: 991px) {
@@ -211,11 +211,11 @@
   }
 
   .topbar__menu-btn--desktop {
-    display: none;
+    display: none !important;
   }
 
   .topbar__menu-btn--mobile {
-    display: grid;
+    display: grid !important;
   }
 }
 
