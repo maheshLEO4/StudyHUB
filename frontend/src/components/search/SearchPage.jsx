@@ -13,7 +13,7 @@ const SearchPage = () => {
   const debounced = useDebounce(query, 350);
 
   useEffect(() => {
-    if (!debounced.trim()) { setResults(null); return; }
+    if (!debounced?.trim()) { setResults(null); return; }
     setLoading(true);
     searchAPI.search(debounced)
       .then(({ data }) => setResults(data.data))

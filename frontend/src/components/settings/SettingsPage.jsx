@@ -16,7 +16,7 @@ const SettingsPage = () => {
   const [pwError, setPwError] = useState('');
 
   const saveProfile = async () => {
-    if (!name.trim()) return;
+    if (!name?.trim()) return;
     const r = await execute(()=>authAPI.updateMe({name}),{successMsg:'Profile updated'});
     updateUser(r.user);
   };

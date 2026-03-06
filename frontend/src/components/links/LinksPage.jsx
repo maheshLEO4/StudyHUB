@@ -38,8 +38,8 @@ const LinksPage = () => {
   const openEdit = (l) => { setForm({ title:l.title,url:l.url,description:l.description||'',category:l.category,tags:(l.tags||[]).join(', ') }); setEditing(l); setShowModal(true); };
 
   const saveLink = async () => {
-    if (!form.title.trim() || !form.url.trim()) return;
-    const payload = { ...form, tags: form.tags.split(',').map(t=>t.trim()).filter(Boolean) };
+    if (!form.title?.trim() || !form.url?.trim()) return;
+    const payload = { ...form, tags: form.tags.split(',').map(t=>t?.trim()).filter(Boolean) };
     if (editing) {
       const r = await execute(() => linksAPI.update(editing._id, payload), { successMsg: 'Link updated' });
       setLinks(prev => prev.map(l => l._id === editing._id ? r : l));

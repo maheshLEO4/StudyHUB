@@ -19,7 +19,7 @@ services:
     environment:
       PORT: 5000
       MONGO_URI: mongodb://mongodb:27017/studyhub
-      JWT_SECRET: change_this_to_a_real_secret
+      JWT_SECRET: your_production_jwt_secret_here
       JWT_EXPIRE: 7d
       NODE_ENV: production
       CLIENT_URL: http://localhost:3000
@@ -33,10 +33,11 @@ services:
     container_name: studyhub-app
     restart: unless-stopped
     depends_on: [ backend ]
-    environment:
-      REACT_APP_API_URL: http://localhost:5000/api
+    # REACT_APP_API_URL is omitted to use relative /api path (proxied by Nginx)
     ports:
       - "3000:3000"
 
 volumes:
   mongo-data:
+
+

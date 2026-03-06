@@ -19,7 +19,7 @@ export default function NoteEditor({ note, subjectId, onClose, onSaved }) {
   const exec = (cmd, val = null) => { document.execCommand(cmd, false, val); editorRef.current?.focus(); };
 
   const addTag = () => {
-    const t = tagInput.trim().toLowerCase();
+    const t = tagInput?.trim().toLowerCase();
     if (t && !form.tags.includes(t)) setForm(f => ({ ...f, tags: [...f.tags, t] }));
     setTagInput("");
   };
@@ -42,7 +42,7 @@ export default function NoteEditor({ note, subjectId, onClose, onSaved }) {
   const removeFile = (url) => setForm(f => ({ ...f, file_urls: f.file_urls.filter(u => u !== url) }));
 
   const save = async () => {
-    if (!form.title.trim()) return;
+    if (!form.title?.trim()) return;
     setSaving(true);
     try {
       const content = editorRef.current?.innerHTML || "";
@@ -131,7 +131,7 @@ export default function NoteEditor({ note, subjectId, onClose, onSaved }) {
 
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" onClick={save} disabled={saving || !form.title.trim()}>
+          <button className="btn btn-primary" onClick={save} disabled={saving || !form.title?.trim()}>
             {saving ? <span className="spinner spinner-sm" /> : "Save Note"}
           </button>
         </div>

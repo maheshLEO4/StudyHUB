@@ -54,7 +54,7 @@ const CalendarPage = () => {
   const selEvents = selStr ? events.filter(e => e.date === selStr) : [];
 
   const saveEvent = async () => {
-    if (!form.title.trim() || !form.date) return;
+    if (!form.title?.trim() || !form.date) return;
     if (editing) {
       const r = await execute(() => eventsAPI.update(editing._id, form), { successMsg: 'Event updated' });
       setEvents(prev => prev.map(e => e._id === editing._id ? r : e));

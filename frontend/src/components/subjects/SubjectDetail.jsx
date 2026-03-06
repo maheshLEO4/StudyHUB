@@ -22,7 +22,7 @@ const SubjectDetail = ({ subject, onBack, onUpdate }) => {
   const openEditNote = (n) => { setNoteForm({ title: n.title, content: n.content, important: n.important }); setEditNote(n); setShowNoteModal(true); };
 
   const saveNote = async () => {
-    if (!noteForm.title.trim()) return;
+    if (!noteForm.title?.trim()) return;
     let updated;
     if (editNote) {
       updated = await execute(() => subjectsAPI.updateNote(subject._id, editNote._id, noteForm), { successMsg: 'Note updated' });

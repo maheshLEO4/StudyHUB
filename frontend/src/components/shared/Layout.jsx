@@ -28,37 +28,26 @@ const Layout = ({ children }) => {
       <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
         <div className="sidebar__header">
           <div className="logo">
-            <div className="logo__icon"><Icon name="book" size={20} /></div>
+            <div className="logo__icon"><Icon name="book" size={18} /></div>
             {!collapsed && <span className="logo__text">StudyHub</span>}
           </div>
         </div>
 
         <nav className="sidebar__nav">
-          <div className="nav-section">
-            {!collapsed && <div className="nav-label">Menu</div>}
-            {NAV_ITEMS.map(({ to, icon, label }) => (
-              <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `nav-item ${isActive ? 'nav-item--active' : ''}`}>
-                <Icon name={icon} size={17} />
-                {!collapsed && <span>{label}</span>}
-              </NavLink>
-            ))}
-          </div>
+          {NAV_ITEMS.map(({ to, icon, label }) => (
+            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `nav-item ${isActive ? 'nav-item--active' : ''}`}>
+              <Icon name={icon} size={18} />
+              {!collapsed && <span>{label}</span>}
+            </NavLink>
+          ))}
         </nav>
 
         <div className="sidebar__footer">
-          {!collapsed && (
-            <div className="user-card">
-              <div className="user-avatar">{user?.name?.charAt(0).toUpperCase()}</div>
-              <div className="user-info">
-                <div className="user-name">{user?.name}</div>
-                <div className="user-email">{user?.email}</div>
-              </div>
-            </div>
-          )}
-          <button className="nav-item nav-item--danger" onClick={handleLogout}>
+          <button className="nav-item nav-item--danger" onClick={handleLogout} style={{ borderTop: 'none', padding: '10px 14px' }}>
             <Icon name="logout" size={16} />
             {!collapsed && <span>Sign Out</span>}
           </button>
+          {!collapsed && <div className="version-footer">StudyHub v1.0</div>}
         </div>
       </aside>
 
@@ -70,19 +59,21 @@ const Layout = ({ children }) => {
             <Icon name="menu" size={20} />
           </button>
           <div className="topbar__spacer" />
-          <button className="topbar__icon-btn" onClick={() => navigate('/search')} title="Search">
-            <Icon name="search" size={17} />
-          </button>
-          <button className="topbar__icon-btn" onClick={toggle} title="Toggle theme">
-            <Icon name={!dark ? 'moon' : 'sun'} size={17} />
-          </button>
-          <button className="topbar__icon-btn" onClick={() => navigate('/settings')} title="Settings">
-            <Icon name="settings" size={17} />
-          </button>
+          <div className="flex gap-2">
+            <button className="topbar__icon-btn" onClick={() => navigate('/search')} title="Search">
+              <Icon name="search" size={16} />
+            </button>
+            <button className="topbar__icon-btn" onClick={toggle} title="Toggle theme">
+              <Icon name={!dark ? 'moon' : 'sun'} size={16} />
+            </button>
+            <button className="topbar__icon-btn" onClick={() => navigate('/settings')} title="Settings">
+              <Icon name="settings" size={16} />
+            </button>
+          </div>
         </header>
 
         {/* Page content */}
-        <main className="page-content">{children}</main>
+        <main className="page-content" style={{ overflowY: 'auto' }}>{children}</main>
       </div>
     </div>
   );

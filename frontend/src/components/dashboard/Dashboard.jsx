@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchAPI } from '../../services/api';
+import { searchAPI, habitsAPI, todosAPI } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import Icon from '../shared/Icon';
 import Spinner from '../shared/Spinner';
+import toast from 'react-hot-toast';
 
-const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+const fmtDateMonth = (d) => {
+  if (!d) return '';
+  const date = new Date(d);
+  return {
+    month: date.toLocaleDateString('en-US', { month: 'short' }),
+    day: date.getDate()
+  };
+};
+
 const typeColor = { study: 'var(--blue)', exam: 'var(--red)', assignment: 'var(--yellow)', reminder: 'var(--green)' };
 
 const Dashboard = () => {
@@ -14,19 +23,36 @@ const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadData = () => {
     searchAPI.dashboard()
       .then(({ data }) => setStats(data.data))
       .catch(console.error)
       .finally(() => setLoading(false));
+  };
 
-    // Disable main page scroll when dashboard is active
-    const parent = document.querySelector('.page-content');
-    if (parent) parent.style.overflowY = 'hidden';
-    return () => {
-      if (parent) parent.style.overflowY = 'auto';
-    };
+  useEffect(() => {
+    loadData();
   }, []);
+
+  const toggleHabit = async (id) => {
+    try {
+      await habitsAPI.toggle(id);
+      loadData();
+      toast.success('Daily task updated');
+    } catch (e) {
+      toast.error('Failed to update task');
+    }
+  };
+
+  const toggleTask = async (task) => {
+    try {
+      await todosAPI.update(task._id, { ...task, completed: true });
+      loadData();
+      toast.success('Task marked as complete');
+    } catch (e) {
+      toast.error('Failed to update task');
+    }
+  };
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -36,13 +62,22 @@ const Dashboard = () => {
 
   const dsaTotal = stats?.dsa?.total || 0;
   const dsaDone = stats?.dsa?.completed || 0;
+  const dsaDoing = stats?.dsa?.['in-progress'] || 0;
+  const dsaTodo = stats?.dsa?.['not-started'] || 0;
   const pct = dsaTotal ? Math.round((dsaDone / dsaTotal) * 100) : 0;
 
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   const statCards = [
-    { label: 'Subjects', num: stats?.subjects || 0, icon: 'book', color: 'var(--blue)', bg: 'var(--blue-bg)', path: '/subjects' },
-    { label: 'DSA Problems', num: dsaTotal, icon: 'code', color: 'var(--purple)', bg: 'var(--purple-bg)', path: '/dsa' },
-    { label: 'Saved Links', num: stats?.links || 0, icon: 'link', color: 'var(--green)', bg: 'var(--green-bg)', path: '/links' },
-    { label: 'Tasks', num: stats?.pendingTasks || 0, icon: 'checklist', color: 'var(--yellow)', bg: 'var(--yellow-bg)', path: '/todos' },
+    { label: 'Subjects', num: stats?.subjects || 0, icon: 'book', color: 'var(--purple)', path: '/subjects' },
+    { label: 'Tasks', num: stats?.pendingTasks?.count || 0, icon: 'edit', color: 'var(--yellow)', path: '/todos' },
+    { label: 'DSA Solved', num: `${dsaDone}/${dsaTotal}`, icon: 'code', color: 'var(--green)', path: '/dsa' },
+    { label: 'Saved Links', num: stats?.links || 0, icon: 'link', color: 'var(--red)', path: '/links' },
   ];
 
   return (
@@ -50,73 +85,101 @@ const Dashboard = () => {
       height: '100%',
       display: 'flex',
       flexDirection: 'column',
-      gap: 12, // Reduced gap
-      padding: '4px 0' // Slight padding
+      gap: 16,
+      padding: '0 4px',
+      overflow: 'hidden'
     }}>
-      <div className="page-header" style={{ marginBottom: 4 }}>
+      <div className="page-header" style={{ marginBottom: 0 }}>
         <div>
-          <div className="page-title" style={{ fontSize: '1.25rem', fontWeight: 800 }}>Good {greet()}, {user?.name?.split(' ')[0]} 👋</div>
-          <div className="page-subtitle" style={{ fontSize: '0.8rem', marginTop: 1 }}>Study overview for today</div>
+          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>Good morning, {user?.name?.split(' ')[0]} 👋</h1>
+          <p style={{ color: 'var(--text3)', fontSize: 12, marginTop: 2 }}>{today}</p>
         </div>
       </div>
 
-      {/* Stat cards - more compact */}
-      <div className="grid-4" style={{ gap: 10 }}>
+      {/* Top 4 Stat Cards - Compact */}
+      <div className="grid-4" style={{ gap: 12, flexShrink: 0 }}>
         {statCards.map((s) => (
-          <div key={s.label} className="stat-card card-hover" style={{ padding: '8px 12px', flexDirection: 'row', alignItems: 'center', gap: 10 }} onClick={() => navigate(s.path)}>
-            <div className="stat-icon" style={{ background: s.bg, color: s.color, width: 32, height: 32, marginBottom: 0, flexShrink: 0 }}><Icon name={s.icon} size={16} /></div>
-            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-              <div className="stat-num" style={{ fontSize: 18, lineHeight: 1 }}>{s.num}</div>
-              <div className="stat-label" style={{ fontSize: 9 }}>{s.label}</div>
+          <div key={s.label} className="card card-hover" style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onClick={() => navigate(s.path)}>
+            <div>
+              <div style={{ color: 'var(--text3)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>{s.label}</div>
+              <div style={{ fontSize: 22, fontWeight: 800 }}>{s.num}</div>
+            </div>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: s.color + '15', color: s.color, display: 'grid', placeItems: 'center' }}>
+              <Icon name={s.icon} size={18} />
             </div>
           </div>
         ))}
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 300px',
-        gap: 12,
-        flex: 1,
-        minHeight: 0
-      }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
-          {/* DSA progress */}
-          {dsaTotal > 0 && (
-            <div className="card" style={{ padding: 12, flexShrink: 0 }}>
-              <div className="flex items-center justify-between mb-2">
-                <div style={{ fontWeight: 700, fontSize: 13 }}>DSA Progress</div>
-                <span className="badge badge-purple" style={{ fontSize: 9 }}>{dsaDone}/{dsaTotal} solved</span>
+      {/* Main Grid - Flexible height */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, flex: 1, minHeight: 0 }}>
+        {/* Left Column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
+          {/* Upcoming - Clickable Header */}
+          <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <div className="flex items-center justify-between mb-4 cursor-pointer" onClick={() => navigate('/calendar')}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 13 }}>
+                <Icon name="calendar" size={14} /> Upcoming Events
               </div>
-              <div className="progress-bar" style={{ height: 5 }}>
-                <div className="progress-fill" style={{ width: pct + '%', background: 'var(--purple)' }} />
-              </div>
-              <div className="flex gap-4 mt-1.5 text-[10px] text-muted">
-                <span>{stats?.dsa?.['not-started'] || 0} todo</span>
-                <span>{stats?.dsa?.['in-progress'] || 0} doing</span>
-                <span>{dsaDone} done</span>
-              </div>
-            </div>
-          )}
-
-          {/* Upcoming events - scrollable but contained */}
-          <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 12, minHeight: 0 }}>
-            <div className="flex items-center justify-between mb-2">
-              <div style={{ fontWeight: 700, fontSize: 13 }}>Upcoming Events</div>
-              <button className="btn btn-ghost btn-sm" style={{ padding: '2px 8px', fontSize: 10 }} onClick={() => navigate('/calendar')}>View all</button>
+              <Icon name="chevronRight" size={14} style={{ opacity: 0.5 }} />
             </div>
             <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4 }}>
               {(stats?.upcomingEvents || []).length === 0
-                ? <div className="text-xs text-muted">No upcoming events.</div>
-                : (stats.upcomingEvents || []).map((ev) => (
-                  <div key={ev._id} className="flex items-center gap-3 mb-1.5 p-1.5" style={{ background: 'var(--bg2)', borderRadius: 6 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: 6, background: typeColor[ev.type] + '22', color: typeColor[ev.type], display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                      <Icon name="calendar" size={12} />
+                ? <div style={{ textAlign: 'center', padding: '10px 0', opacity: 0.5 }}>
+                  <div style={{ fontSize: 11 }}>No upcoming events</div>
+                </div>
+                : (stats.upcomingEvents.slice(0, 3)).map(ev => {
+                  const date = fmtDateMonth(ev.date);
+                  return (
+                    <div key={ev._id} className="flex gap-3 mb-4 last:mb-0">
+                      <div style={{ textAlign: 'center', minWidth: 24 }}>
+                        <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase' }}>{date.month}</div>
+                        <div style={{ fontSize: 14, fontWeight: 800 }}>{date.day}</div>
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div className="truncate" style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{ev.title}</div>
+                        <span className="badge" style={{ background: typeColor[ev.type] + '20', color: typeColor[ev.type], borderRadius: 4, padding: '1px 8px', fontSize: 8 }}>
+                          {ev.type}
+                        </span>
+                      </div>
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div className="truncate" style={{ fontWeight: 600, fontSize: 12 }}>{ev.title}</div>
-                      <div className="text-[10px] text-muted">{fmtDate(ev.date)} · {ev.type}</div>
+                  );
+                })}
+            </div>
+          </div>
+
+          {/* Daily Tasks - Clickable Header */}
+          <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <div className="flex items-center justify-between mb-4 cursor-pointer" onClick={() => navigate('/habits')}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 13 }}>
+                <Icon name="fire" size={14} /> Daily Tasks
+              </div>
+              <Icon name="chevronRight" size={14} style={{ opacity: 0.5 }} />
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4 }}>
+              {!stats?.habits?.list?.length
+                ? <div style={{ textAlign: 'center', padding: '10px 0', opacity: 0.5, fontSize: 11 }}>No tasks set</div>
+                : (stats.habits.list.slice(0, 4)).map(h => (
+                  <div key={h._id} className="flex items-center gap-3 mb-2 p-1.5 rounded-lg hover:bg-[var(--bg2)] transition-colors cursor-pointer" onClick={(e) => { e.stopPropagation(); toggleHabit(h._id); }}>
+                    <div style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: 5,
+                      border: '2px solid ' + (h.completedToday ? 'var(--green)' : 'var(--border)'),
+                      background: h.completedToday ? 'var(--green)' : 'transparent',
+                      display: 'grid',
+                      placeItems: 'center',
+                      color: 'white',
+                      flexShrink: 0
+                    }}>
+                      {h.completedToday && <Icon name="check" size={10} />}
                     </div>
+                    <span className="truncate" style={{
+                      fontSize: 12,
+                      fontWeight: 500,
+                      color: h.completedToday ? 'var(--text3)' : 'var(--text)',
+                      textDecoration: h.completedToday ? 'line-through' : 'none'
+                    }}>{h.name}</span>
                   </div>
                 ))
               }
@@ -124,46 +187,106 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Right Column - Side by side parts */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
-          <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 12, overflowY: 'auto' }}>
-            <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>Quick Actions</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {[
-                { label: 'Add note', icon: 'book', path: '/subjects' },
-                { label: 'Save link', icon: 'link', path: '/links' },
-                { label: 'DSA Track', icon: 'code', path: '/dsa' },
-                { label: 'Schedule', icon: 'calendar', path: '/calendar' },
-                { label: 'Daily Tasks', icon: 'fire', path: '/habits' },
-              ].map((q) => (
-                <div key={q.path} className="flex items-center gap-3 card-hover" style={{ padding: '8px 10px', borderRadius: 8, background: 'var(--bg2)', border: '1px solid var(--border)' }} onClick={() => navigate(q.path)}>
-                  <div style={{ color: 'var(--accent)', background: 'var(--accent-bg)', width: 28, height: 28, borderRadius: 6, display: 'grid', placeItems: 'center', flexShrink: 0 }}><Icon name={q.icon} size={14} /></div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: 12 }}>{q.label}</div>
-                  </div>
-                  <Icon name="chevronRight" size={12} style={{ color: 'var(--text3)' }} />
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginTop: 'auto', paddingTop: 12 }}>
-              <div style={{ background: 'var(--accent-bg)', padding: 10, borderRadius: 10, border: '1px dashed var(--accent)' }}>
-                <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 2 }}>Daily Focus</div>
-                <div style={{ fontSize: 11, fontWeight: 500, lineHeight: 1.3, fontStyle: 'italic' }}>"Success is the sum of small efforts, repeated daily."</div>
+        {/* Right Column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 0 }}>
+          {/* Pending Tasks - Clickable Header */}
+          <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <div className="flex items-center justify-between mb-4 cursor-pointer" onClick={() => navigate('/todos')}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 13 }}>
+                <Icon name="check" size={14} /> Pending Tasks
               </div>
+              <Icon name="chevronRight" size={14} style={{ opacity: 0.5 }} />
             </div>
+            <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4 }}>
+              {!stats?.pendingTasks?.list?.length
+                ? <div style={{ textAlign: 'center', padding: '20px 0', opacity: 0.5 }}>
+                  <div style={{ fontSize: 11 }}>All caught up! 🎉</div>
+                </div>
+                : stats.pendingTasks.list.slice(0, 5).map(t => (
+                  <div key={t._id} className="flex items-start gap-3 mb-2 p-1.5 rounded-lg hover:bg-[var(--bg2)] transition-colors">
+                    <div
+                      onClick={(e) => { e.stopPropagation(); toggleTask(t); }}
+                      style={{
+                        marginTop: 2,
+                        width: 16,
+                        height: 16,
+                        borderRadius: 4,
+                        border: '2px solid var(--border)',
+                        cursor: 'pointer',
+                        flexShrink: 0
+                      }}
+                    />
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div className="truncate" style={{ fontSize: 12, fontWeight: 600 }}>{t.text}</div>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+
+          {/* Recent Notes - Clickable Header */}
+          <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <div className="flex items-center justify-between mb-4 cursor-pointer" onClick={() => navigate('/subjects')}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 13 }}>
+                <Icon name="star" size={14} /> Recent Notes
+              </div>
+              <Icon name="chevronRight" size={14} style={{ opacity: 0.5 }} />
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4 }}>
+              {(stats?.recentNotes || []).length === 0
+                ? <div style={{ textAlign: 'center', padding: '10px 0', opacity: 0.5, fontSize: 11 }}>No notes yet</div>
+                : (stats.recentNotes.slice(0, 3)).map(note => (
+                  <div key={note._id} className="mb-3 last:mb-0 pb-3 last:pb-0" style={{ borderBottom: '1px solid var(--border)' }}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: note.subject?.color || 'var(--accent)', flexShrink: 0 }} />
+                      <div className="truncate" style={{ fontSize: 12, fontWeight: 600 }}>{note.title}</div>
+                    </div>
+                    <div style={{ fontSize: 10, color: 'var(--text3)' }}>
+                      {note.subject?.name} • {new Date(note.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom DSA Tracker - Compact */}
+      <div className="card" style={{ padding: '16px 20px', flexShrink: 0, cursor: 'pointer' }} onClick={() => navigate('/dsa')}>
+        <div className="flex items-center justify-between mb-3">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 13 }}>
+            <Icon name="activity" size={14} /> DSA Progress
+          </div>
+          <Icon name="chevronRight" size={14} style={{ opacity: 0.5 }} />
+        </div>
+
+        <div className="flex items-end justify-between mb-2">
+          <div style={{ fontSize: 10, color: 'var(--text3)' }}>{dsaDone} of {dsaTotal} solved</div>
+          <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--accent)' }}>{pct}%</span>
+        </div>
+
+        <div className="progress-bar" style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 10 }}>
+          <div className="progress-fill" style={{ width: pct + '%', background: 'var(--accent)', borderRadius: 10 }} />
+        </div>
+
+        <div className="flex gap-4 mt-3">
+          <div className="flex items-center gap-2">
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#64748b' }} />
+            <span style={{ fontSize: 10, color: 'var(--text2)' }}>To-do: <strong>{dsaTodo}</strong></span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--yellow)' }} />
+            <span style={{ fontSize: 10, color: 'var(--text2)' }}>Doing: <strong>{dsaDoing}</strong></span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)' }} />
+            <span style={{ fontSize: 10, color: 'var(--text2)' }}>Done: <strong>{dsaDone}</strong></span>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-const greet = () => {
-  const h = new Date().getHours();
-  if (h < 12) return 'morning';
-  if (h < 18) return 'afternoon';
-  return 'evening';
 };
 
 export default Dashboard;

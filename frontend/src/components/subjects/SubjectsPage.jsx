@@ -32,7 +32,7 @@ const SubjectsPage = () => {
   const openEdit = (s, e) => { e.stopPropagation(); setForm({ name: s.name, description: s.description || '', color: s.color }); setEditing(s); setShowModal(true); };
 
   const saveSubject = async () => {
-    if (!form.name.trim()) return;
+    if (!form.name?.trim()) return;
     if (editing) {
       const result = await execute(() => subjectsAPI.update(editing._id, form), { successMsg: 'Subject updated' });
       setSubjects((prev) => prev.map((s) => s._id === editing._id ? result : s));

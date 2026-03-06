@@ -46,7 +46,7 @@ const DSAPage = () => {
   };
 
   const saveProblem = async () => {
-    if (!form.title.trim()) return;
+    if (!form.title?.trim()) return;
     if (editing) {
       const r = await execute(() => dsaAPI.update(editing._id, form), { successMsg: 'Problem updated' });
       setProblems(prev => prev.map(x => x._id === editing._id ? r : x));
@@ -63,9 +63,16 @@ const DSAPage = () => {
     setProblems(prev => prev.filter(x => x._id !== id));
   };
 
-  const statsArr = meta?.stats || [];
   const statMap = {};
-  statsArr.forEach(s => { statMap[s._id] = s.count; });
+  if (meta?.stats) {
+    if (Array.isArray(meta.stats)) {
+      meta.stats.forEach(s => { if (s?._id) statMap[s._id] = s.count; });
+    } else {
+      Object.assign(statMap, meta.stats);
+    }
+  }
+
+
 
   return (
     <div>

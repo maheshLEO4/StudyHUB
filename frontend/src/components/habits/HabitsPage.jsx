@@ -32,7 +32,7 @@ const HabitsPage = () => {
 
     const handleSave = async (e) => {
         if (e) e.preventDefault();
-        if (!form.name.trim()) return;
+        if (!form.name?.trim()) return;
         setSaving(true);
         try {
             if (editingHabit) {
