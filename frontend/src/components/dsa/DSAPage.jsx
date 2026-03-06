@@ -97,7 +97,7 @@ const DSAPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 mb-4 flex-wrap">
+      <div className="dsa-filters flex gap-3 mb-4 flex-wrap">
         <div className="search-bar flex-1" style={{ maxWidth: 320 }}>
           <Icon name="search" size={15} />
           <input placeholder="Search problems..." value={search} onChange={e => setSearch(e.target.value)} />
