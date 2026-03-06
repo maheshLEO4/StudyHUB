@@ -47,8 +47,9 @@ app.use('/api/calendar', calendarRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/habits', habitRoutes);
 
-// Health check
+// Health check & Root
 app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
+app.get('/', (req, res) => res.send('StudyHub API is Running... 🚀'));
 
 const errorHandler = require('./middleware/errorHandler');
 
@@ -62,7 +63,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 StudyHub API running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n🚀 StudyHub API running on port ${PORT}`);
   console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
