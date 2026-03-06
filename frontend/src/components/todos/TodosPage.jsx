@@ -91,7 +91,7 @@ const TodosPage = () => {
       <div className="priority-dot" style={{ background: PCOLOR[t.priority] }} title={t.priority} />
       <div className="flex gap-1">
         <button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setTodoForm({ text: t.text, dueDate: t.dueDate || '', priority: t.priority, checklist: t.checklist || '' }); setEditTodo(t); setShowTodoModal(true); }}><Icon name="edit" size={12} /></button>
-        <button className="btn btn-ghost btn-sm btn-icon" onClick={() => deleteTodo(t._id)}><Icon name="trash" size={12} /></button>
+        <button className="btn btn-ghost btn-sm btn-icon btn-danger" onClick={() => deleteTodo(t._id)}><Icon name="trash" size={12} /></button>
       </div>
     </div>
   );
