@@ -19,13 +19,19 @@ const Layout = ({ children }) => {
   const { dark, toggle } = useTheme();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
 
   const handleLogout = async () => { await logout(); navigate('/login'); };
 
   return (
-    <div className="app-layout">
+    <div className={`app-layout ${mobileOpen ? 'app-layout--mobile-open' : ''}`}>
+      {/* Mobile Overlay */}
+      {mobileOpen && <div className="sidebar-overlay" onClick={() => setMobileOpen(false)} />}
+
       {/* Sidebar */}
-      <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
+      <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''} ${mobileOpen ? 'sidebar--mobile-open' : ''}`}>
+
         <div className="sidebar__header">
           <div className="logo">
             <div className="logo__icon"><Icon name="book" size={18} /></div>
@@ -35,10 +41,11 @@ const Layout = ({ children }) => {
 
         <nav className="sidebar__nav">
           {NAV_ITEMS.map(({ to, icon, label }) => (
-            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `nav-item ${isActive ? 'nav-item--active' : ''}`}>
+            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `nav-item ${isActive ? 'nav-item--active' : ''}`} onClick={() => setMobileOpen(false)}>
               <Icon name={icon} size={18} />
-              {!collapsed && <span>{label}</span>}
+              {(!collapsed || mobileOpen) && <span>{label}</span>}
             </NavLink>
+
           ))}
         </nav>
 
@@ -55,9 +62,13 @@ const Layout = ({ children }) => {
       <div className="main-area">
         {/* Topbar */}
         <header className="topbar">
-          <button className="topbar__menu-btn" onClick={() => setCollapsed((c) => !c)}>
+          <button className="topbar__menu-btn topbar__menu-btn--desktop" onClick={() => setCollapsed((c) => !c)}>
             <Icon name="menu" size={20} />
           </button>
+          <button className="topbar__menu-btn topbar__menu-btn--mobile" onClick={() => setMobileOpen(true)}>
+            <Icon name="menu" size={20} />
+          </button>
+
           <div className="topbar__spacer" />
           <div className="flex gap-2">
             <button className="topbar__icon-btn" onClick={() => navigate('/search')} title="Search">

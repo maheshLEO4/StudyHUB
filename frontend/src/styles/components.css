@@ -15,9 +15,41 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  transition: width var(--transition);
+  transition: width var(--transition), transform var(--transition);
   overflow: hidden;
+  z-index: 1001;
 }
+
+@media (max-width: 991px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebar--mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar--collapsed {
+    width: 280px;
+    /* Reset on mobile */
+  }
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
 
 .sidebar__header {
   padding: 24px 20px 20px;
@@ -180,6 +212,21 @@
   background: var(--bg2);
 }
 
+.topbar__menu-btn--mobile {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  .topbar__menu-btn--desktop {
+    display: none;
+  }
+
+  .topbar__menu-btn--mobile {
+    display: grid;
+  }
+}
+
+
 .topbar__spacer {
   flex: 1;
 }
@@ -205,9 +252,16 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 28px 32px;
+  padding: 24px 28px;
   min-height: 0;
 }
+
+@media (max-width: 768px) {
+  .page-content {
+    padding: 20px 16px;
+  }
+}
+
 
 .dashboard-root {
   flex: 1;
@@ -346,6 +400,13 @@ select.form-control {
   gap: 12px;
 }
 
+@media (max-width: 580px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 /* ── Modal ─────────────────────────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
@@ -469,6 +530,18 @@ select.form-control {
   letter-spacing: -.4px;
 }
 
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+}
+
 .page-subtitle {
   font-size: 13px;
   color: var(--text3);
@@ -479,7 +552,10 @@ select.form-control {
   display: flex;
   gap: 10px;
   flex-shrink: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
+
 
 /* ── Grids ─────────────────────────────────────────────────────────────────── */
 .grid-2 {
