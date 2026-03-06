@@ -62,10 +62,10 @@ const Layout = ({ children }) => {
       <div className="main-area">
         {/* Topbar */}
         <header className="topbar">
-          <button className="topbar__menu-btn topbar__menu-btn--desktop" onClick={() => setCollapsed((c) => !c)}>
+          <button className="topbar__icon-btn topbar__menu-btn--desktop" onClick={() => setCollapsed((c) => !c)}>
             <Icon name="menu" size={20} />
           </button>
-          <button className="topbar__menu-btn topbar__menu-btn--mobile" onClick={() => setMobileOpen(true)}>
+          <button className="topbar__icon-btn topbar__menu-btn--mobile" onClick={() => setMobileOpen(true)}>
             <Icon name="menu" size={20} />
           </button>
 

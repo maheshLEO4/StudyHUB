@@ -120,7 +120,11 @@ const DSAPage = () => {
             <div key={p._id} className="dsa-item">
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span style={{ fontWeight: 700, fontSize: 13.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300 }}>{p.title}</span>
+                  {p.url ? (
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: 13.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300, color: 'var(--text)', textDecoration: 'none' }} onMouseEnter={e => e.target.style.color = 'var(--accent)'} onMouseLeave={e => e.target.style.color = 'var(--text)'}>{p.title}</a>
+                  ) : (
+                    <span style={{ fontWeight: 700, fontSize: 13.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300 }}>{p.title}</span>
+                  )}
                   <span className={`badge ${DIFF_BADGE[p.difficulty]}`}>{p.difficulty}</span>
                 </div>
                 {p.topic && <div className="text-xs text-muted">{p.topic}</div>}
@@ -136,7 +140,6 @@ const DSAPage = () => {
                   <option value="in-progress">In Progress</option>
                   <option value="completed">Completed</option>
                 </select>
-                {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm btn-icon" title="Open problem" style={{ height: 28, width: 28 }}><Icon name="eye" size={13} /></a>}
                 <button className="btn btn-ghost btn-sm btn-icon" onClick={() => { setForm({ title: p.title, url: p.url || '', topic: p.topic || '', difficulty: p.difficulty, status: p.status, notes: p.notes || '' }); setEditing(p); setShowModal(true); }} style={{ height: 28, width: 28 }}><Icon name="edit" size={13} /></button>
                 <button className="btn btn-ghost btn-sm btn-icon btn-danger" onClick={() => deleteProblem(p._id)} style={{ height: 28, width: 28 }}><Icon name="trash" size={13} /></button>
               </div>
