@@ -10,6 +10,8 @@ services:
       - mongo-data:/data/db
     ports:
       - "27017:27017"
+    networks:
+      - studyhub-net
 
   backend:
     build: ./backend
@@ -27,6 +29,8 @@ services:
       - "5000:5000"
     volumes:
       - ./backend/uploads:/app/uploads
+    networks:
+      - studyhub-net
 
   frontend:
     build: ./frontend
@@ -36,6 +40,12 @@ services:
     # REACT_APP_API_URL is omitted to use relative /api path (proxied by Nginx)
     ports:
       - "3000:3000"
+    networks:
+      - studyhub-net
+
+networks:
+  studyhub-net:
+    driver: bridge
 
 volumes:
   mongo-data:
