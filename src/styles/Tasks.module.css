@@ -1,0 +1,49 @@
+.page { display: flex; flex-direction: column; gap: 20px; }
+
+.pageHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+
+.title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -0.35px; line-height: 1.2; }
+.subtitle { font-size: 13px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
+
+.tabs { display: flex; gap: 4px; background: var(--surface2); padding: 4px; border-radius: 10px; width: fit-content; }
+.tab { padding: 7px 18px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; line-height: 1.35; background: transparent; color: var(--text2); transition: all 0.14s; font-family: 'DM Sans', sans-serif; }
+.tabActive { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+
+.list { display: flex; flex-direction: column; gap: 8px; }
+
+.taskCard {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.14s;
+}
+.taskCard:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+.done { opacity: 0.55; }
+
+.checkBtn { background: none; border: none; cursor: pointer; flex-shrink: 0; display: flex; padding: 2px; transition: transform 0.12s; }
+.checkBtn:hover { transform: scale(1.15); }
+
+.taskBody { flex: 1; min-width: 0; }
+
+.taskTitle { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; }
+.strikethrough { text-decoration: line-through; color: var(--text2); }
+
+.taskMeta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+
+.groupTag { font-size: 11px; background: var(--surface2); padding: 2px 8px; border-radius: 4px; color: var(--text2); }
+
+.dueDate { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text2); line-height: 1.4; }
+.overdue { color: var(--red) !important; }
+
+.priorityDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.taskActions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.14s; }
+.taskCard:hover .taskActions { opacity: 1; }
+
+.formGrid { display: flex; flex-direction: column; gap: 14px; }
+
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.modalFooter { display: flex; gap: 10px; margin-top: 24px; }
+.modalFooter > * { flex: 1; justify-content: center; }

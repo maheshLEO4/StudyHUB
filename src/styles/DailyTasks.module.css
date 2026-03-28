@@ -1,0 +1,104 @@
+.page { display: flex; flex-direction: column; gap: 16px; }
+
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+.title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -0.35px; line-height: 1.2; }
+.subtitle { font-size: 13px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
+
+.headerActions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.allDoneBadge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 99px;
+  background: rgba(82,214,138,0.15); color: var(--green);
+  font-size: 12px; font-weight: 600;
+}
+
+.inlineInput { display: flex; align-items: center; gap: 8px; }
+
+.inputBox {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  outline: none;
+  width: 220px;
+  transition: border-color 0.15s;
+}
+.inputBox:focus { border-color: var(--accent); }
+
+/* Stats */
+.statRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+.statCard { padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
+
+.statIconBox {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.statValue { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 22px; line-height: 1.2; }
+.statLabel { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.statLabel { line-height: 1.35; }
+
+/* Progress */
+.progressCard { padding: 18px 20px; }
+.progressHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progressLabel { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.progressPct { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; }
+.progressCaption { font-size: 12px; color: var(--text2); margin-top: 8px; }
+
+.progressPct { line-height: 1.2; }
+.progressCaption { line-height: 1.45; }
+
+/* Lists */
+.listCard { padding: 20px; }
+
+.listHeading { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 16px; line-height: 1.35; }
+
+.listEmpty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 24px 0; text-align: center; }
+.listEmpty p { font-size: 13px; color: var(--text2); }
+
+.taskList { display: flex; flex-direction: column; gap: 4px; }
+
+.taskItem {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 10px; border-radius: 9px;
+  transition: background 0.12s;
+}
+.taskItem:hover { background: var(--surface2); }
+
+.circle {
+  flex-shrink: 0; width: 20px; height: 20px;
+  border-radius: 50%; border: 2px solid var(--border);
+  background: transparent; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.circle:hover { border-color: var(--accent); }
+
+.circleDone {
+  flex-shrink: 0; width: 20px; height: 20px;
+  border-radius: 50%; border: none;
+  background: var(--accent); cursor: pointer;
+  color: white; font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.taskText { flex: 1; font-size: 13px; color: var(--text); line-height: 1.45; }
+.taskTextDone { flex: 1; font-size: 13px; color: var(--text2); text-decoration: line-through; line-height: 1.45; }
+
+.removeBtn {
+  background: none; border: none; cursor: pointer;
+  color: var(--text3); padding: 2px;
+  opacity: 0; transition: all 0.12s;
+  display: flex; align-items: center;
+}
+.taskItem:hover .removeBtn { opacity: 1; }
+.removeBtn:hover { color: var(--red); }
+
+@media (max-width: 500px) {
+  .statRow { grid-template-columns: 1fr 1fr; }
+}
